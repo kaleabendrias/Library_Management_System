@@ -1,0 +1,65 @@
+# Bench environment and dependencies
+library-bench/env/
+library-bench/node_modules/
+library-bench/package-lock.json
+library-bench/yarn.lock
+
+# Sites: configs, backups, logs, private data
+library-bench/sites/*/site_config.json
+library-bench/sites/*/private/
+library-bench/sites/*/backups/
+library-bench/sites/*/locks/
+library-bench/sites/*/logs/
+library-bench/sites/*/scheduler.log
+library-bench/sites/common_site_config.json
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# IDE/editor files
+.vscode/
+.idea/
+.DS_Store
+
+# System & misc
+*.bak
+*.tmp
+*.orig
+*.swp
+*.log
+
+# Python packaging
+*.egg-info/
+*.dist-info/
+*.egg
+pip-log.txt
+
+# Test coverage
+htmlcov/
+.tox/
+.coverage
+coverage.xml
+nosetests.xml
+*.cover
+.pytest_cache/
+test-results.xml
+
+# Translations
+*.mo
+*.pot
+*.po~
+
+# Patch, dump, and cache
+*.sql
+*.sql.gz
+*.tar
+*.tar.gz
+patches.txt
+*.msgpack
+__pypackages__/
+library-bench/config/redis*.conf
+library-bench/config/redis*.conf
+library-bench/config/redis*.acl
