@@ -63,3 +63,31 @@ __pypackages__/
 library-bench/config/redis*.conf
 library-bench/config/redis*.conf
 library-bench/config/redis*.acl
+
+# Bench environment
+/backend/library-bench/env/
+/backend/library-bench/node_modules/
+/backend/library-bench/config/
+/backend/library-bench/logs/
+/backend/library-bench/package-lock.json
+
+# Site-specific files
+/backend/library-bench/sites/assets/
+/backend/library-bench/sites/*/private/
+/backend/library-bench/sites/*/backups/
+/backend/library-bench/sites/*/site_config.json
+/backend/library-bench/sites/apps.txt
+
+# Redis and DB state
+/backend/library-bench/config/pids/
+/backend/library-bench/config/*.rdb
+
+# Cookies or test files
+cookies.txt
+
+# Ignore all apps except your custom one
+/backend/library-bench/apps/frappe/
+/backend/library-bench/apps/erpnext/
+
+# Keep only your app
+!/backend/library-bench/apps/library_app/
