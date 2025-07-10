@@ -57,3 +57,8 @@ def login(email=None, password=None):
     except Exception as e:
         frappe.response["http_status_code"] = 500
         return {"error": f"Login failed: {str(e)}"}
+    
+@frappe.whitelist()
+def logout():
+    frappe.local.login_manager.logout()
+    return {"message": "Logged out"}
