@@ -5,7 +5,7 @@ library-bench/package-lock.json
 library-bench/yarn.lock
 
 # Sites: configs, backups, logs, private data
-library-bench/sites/*/site_config.json
+# library-bench/sites/*/site_config.json
 library-bench/sites/*/private/
 library-bench/sites/*/backups/
 library-bench/sites/*/locks/
