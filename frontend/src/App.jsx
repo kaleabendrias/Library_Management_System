@@ -7,6 +7,7 @@ import ProtectedRoute from './layouts/ProtectedRoute'
 import Navbar from './components/NavBar'
 import Books from './pages/Books'
 import Loans from './pages/Loans'
+import Reservations from './pages/Reservations'
 
 function App() {
   
@@ -20,7 +21,8 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path='/' element={<Home />} /> 
         <Route path="/books" element={<Books />} />
-        <Route path="/loans" element={<Loans />} />     
+        <Route path="/loans" element={<Loans />} />   
+        <Route path="/reservations" element={<Reservations />} />     
       </Route>
     </Routes>
     </>
