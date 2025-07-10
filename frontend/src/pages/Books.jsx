@@ -5,9 +5,9 @@ import { useAuthStore } from "../store/authStore";
 
 export default function Books() {
   const [books, setBooks] = useState([]);
+  const [activeLoans, setActiveLoans] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { isAuthenticated, user } = useAuthStore();
-  
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -16,59 +16,112 @@ export default function Books() {
           "http://localhost:8000/api/method/library_app.api.book.list_books",
           { withCredentials: true }
         );
+        console.log(res.data.message)
         setBooks(res.data.message || res.data);
       } catch (err) {
         toast.error("Failed to fetch books");
       }
     };
 
+    const fetchLoans = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8000/api/resource/Loan?filters=[[\"returned\",\"=\",0]]",
+          { withCredentials: true }
+        );
+        setActiveLoans(res.data.data);
+      } catch (err) {
+        console.log("Failed to fetch active loans");
+      }
+    };
+
     fetchBooks();
+    fetchLoans();
   }, []);
 
   const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const isBookRented = (bookId) =>
+    activeLoans.some((loan) => loan.book === bookId);
+
   const handleRent = async (bookId) => {
+  if (!isAuthenticated) {
+    toast.error("Please log in to rent a book");
+    return;
+  }
+
+  try {
+    const loanDate = new Date().toISOString().slice(0, 10);
+    const returnDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10);
+
+    const payload = new URLSearchParams();
+    payload.append("book", bookId);
+    payload.append("member", user.email);
+    payload.append("loan_date", loanDate);
+    payload.append("return_date", returnDate);
+
+    await axios.post(
+      "http://localhost:8000/api/method/library_app.api.loan.create_loan",
+      payload,
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        withCredentials: true,
+      }
+    );
+
+    toast.success("Book rented successfully!");
+  } catch (err) {
+    const serverMessages = err.response?.data?._server_messages;
+    let msg =
+      err.response?.data?.message || err.response?.data?.error || "Renting failed";
+    if (serverMessages) {
+      try {
+        const messagesArray = JSON.parse(serverMessages);
+        const firstMessageObj = JSON.parse(messagesArray[0]);
+        msg = firstMessageObj.message;
+      } catch (parseError) {}
+    }
+
+    if (msg.includes("Book is already on loan")) {
+      if (window.confirm("Book is already on loan. Reserve it instead?")) {
+        handleReserve(bookId);
+      }
+    } else {
+      toast.error(msg);
+    }
+  }
+};
+
+  const handleReserve = async (bookId) => {
     if (!isAuthenticated) {
-      toast.error("Please log in to rent a book");
+      toast.error("Please log in to reserve a book");
       return;
     }
 
     try {
-      const loanDate = new Date().toISOString().slice(0, 10);
-      const returnDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .slice(0, 10);
-
       const payload = new URLSearchParams();
       payload.append("book", bookId);
-      payload.append("member", user.email); // or user.name if that's the actual ID
-      payload.append("loan_date", loanDate);
-      payload.append("return_date", returnDate);
+      payload.append("member", user.email);
+      payload.append("reservation_date", new Date().toISOString().slice(0, 10));
 
       await axios.post(
-        "http://localhost:8000/api/method/library_app.api.loan.create_loan",
+        "http://localhost:8000/api/method/library_app.api.reservation.create_reservation",
         payload,
         {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           withCredentials: true,
         }
       );
 
-      toast.success("Book rented successfully!");
+      toast.success("Reservation created successfully!");
     } catch (err) {
-      console.log("err: ", err);
-      const serverMessages = err.response?.data?._server_messages;
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data?._server_messages ||
-        "Renting failed";
-      const messagesArray = JSON.parse(serverMessages);
-      const firstMessageObj = JSON.parse(messagesArray[0]);
-      toast.error(firstMessageObj.message || msg);
+      console.log("Reserve error: ", err);
+      const msg = err.response?.data?.message || err.response?.data?.error || "Reservation failed";
+      toast.error(msg);
     }
   };
 
@@ -106,12 +159,21 @@ export default function Books() {
             </p>
             <p className="text-sm text-gray-400 italic">ISBN: {book.isbn}</p>
 
-            <button
-              onClick={() => handleRent(book.name)}
-              className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium transition"
-            >
-              Rent this Book
-            </button>
+            {isBookRented(book.name) ? (
+              <button
+                onClick={() => handleReserve(book.name)}
+                className="mt-4 w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded text-sm font-medium transition"
+              >
+                Reserve This Book
+              </button>
+            ) : (
+              <button
+                onClick={() => handleRent(book.name)}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium transition"
+              >
+                Rent this Book
+              </button>
+            )}
           </div>
         ))}
       </div>
