@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    const login = useAuthStore.getState().login;
 
     if (!formData.email || !formData.password) {
       toast.error("Please fill in all fields");
@@ -30,11 +32,20 @@ export default function Login() {
     }
 
     try {
-      await axios.post(
+      const res = await axios.post(
         `http://localhost:8000/api/method/library_app.api.auth.login`,
         formData,
         { withCredentials: true }
       );
+
+      console.log(res.data);
+
+      const { email, full_name, roles, sid } = res.data.message;
+
+      login({
+        user: { email, full_name, roles, sid },
+        token: sid, // optional, if you're using sid as "token"
+      });
 
       toast.success("Login successful");
       setTimeout(() => navigate("/"), 1000);
