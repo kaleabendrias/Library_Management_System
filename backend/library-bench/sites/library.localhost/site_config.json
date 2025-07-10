@@ -1,6 +1,7 @@
 {
+ "allow_cors": "http://localhost:5173",
  "db_name": "_afbd398cd86d7497",
  "db_password": "eg0eJDYrDSUGoSOZ",
  "db_type": "mariadb",
- "allow_cors": "http://localhost:5173"
+ "developer_mode": 1
 }

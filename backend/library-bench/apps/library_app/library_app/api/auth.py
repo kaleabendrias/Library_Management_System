@@ -16,6 +16,16 @@ def register(email=None, full_name=None, password=None, role="Member"):
         return {"error": "A user with this email already exists."}
 
     try:
+        
+        # Create Member linked to User
+        member = frappe.get_doc({
+            "doctype": "Library Member",
+            "email": email,
+            "full_name": full_name,
+        })
+        member.insert(ignore_permissions=True)
+        
+        # Create User
         user = frappe.get_doc({
             "doctype": "User",
             "email": email,
@@ -25,8 +35,10 @@ def register(email=None, full_name=None, password=None, role="Member"):
             "roles": [{"role": role}]
         })
         user.insert(ignore_permissions=True)
+
         frappe.db.commit()
-        return {"message": "User registered successfully."}
+        return {"message": "User and Member registered successfully."}
+
     except Exception as e:
         frappe.response["http_status_code"] = 500
         return {"error": f"Registration failed: {str(e)}"}

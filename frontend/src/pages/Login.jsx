@@ -48,7 +48,7 @@ export default function Login() {
       });
 
       toast.success("Login successful");
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/books"), 1000);
     } catch (err) {
       const message = err.response?.data?.message?.error || "Login failed";
       toast.error(message);
