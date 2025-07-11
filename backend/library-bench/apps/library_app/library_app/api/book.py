@@ -18,7 +18,7 @@ def create_book(title, author, publish_date, isbn):
     if frappe.session.user == "Guest":
         frappe.throw("You must be logged in to perform this action.", title="Unauthorized")
     print(frappe.session.user)
-    frappe.only_for("Librarian", "Admin")
+    frappe.only_for(["Librarian", "Admin"])
     doc = frappe.get_doc({
         "doctype": "Book",
         "title": title,
