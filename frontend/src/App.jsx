@@ -9,6 +9,7 @@ import Books from './pages/Books'
 import Loans from './pages/Loans'
 import Reservations from './pages/Reservations'
 import AddBook from './pages/AddBooks'
+import EditBook from './pages/EditBook'
 
 function App() {
   
@@ -24,7 +25,8 @@ function App() {
         <Route path="/books" element={<Books />} />
         <Route path="/loans" element={<Loans />} />   
         <Route path="/reservations" element={<Reservations />} />  
-        <Route path="/add-book" element={<AddBook />} />     
+        <Route path="/add-book" element={<AddBook />} /> 
+        <Route path="/edit-book/:bookId" element={<EditBook />} />     
       </Route>
     </Routes>
     </>
