@@ -8,6 +8,7 @@ import Navbar from './components/NavBar'
 import Books from './pages/Books'
 import Loans from './pages/Loans'
 import Reservations from './pages/Reservations'
+import AddBook from './pages/AddBooks'
 
 function App() {
   
@@ -22,7 +23,8 @@ function App() {
         <Route path='/' element={<Home />} /> 
         <Route path="/books" element={<Books />} />
         <Route path="/loans" element={<Loans />} />   
-        <Route path="/reservations" element={<Reservations />} />     
+        <Route path="/reservations" element={<Reservations />} />  
+        <Route path="/add-book" element={<AddBook />} />     
       </Route>
     </Routes>
     </>
