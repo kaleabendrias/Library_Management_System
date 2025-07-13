@@ -5,14 +5,36 @@ from frappe import _
 def create_reservation(book, member, reservation_date):
     frappe.only_for(["Member", "Librarian", "Admin"])
 
-    doc = frappe.get_doc({
+    # Create reservation with notified = 0
+    reservation = frappe.get_doc({
         "doctype": "Reservation",
         "book": book,
         "member": member,
         "reservation_date": reservation_date,
         "notified": 0
-    }).insert()
-    return {"message": "Reservation created", "reservation_id": doc.name}
+    })
+    reservation.insert()
+
+    # Get member email from User doctype
+    user_doc = frappe.get_doc("User", member)
+
+    try:
+        frappe.sendmail(
+            recipients=user_doc.email,
+            subject="Library Reservation Confirmation",
+            message=f"Hello {user_doc.full_name},<br>Your reservation for book ID: {book} is confirmed on {reservation_date}.",
+        )
+
+        # Update notified = 1 after email sent
+        reservation.notified = 1
+        reservation.save()
+        print("Reservation email sent successfully.")
+
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        frappe.log_error(f"Email sending failed: {e}", "Reservation Email Error")
+
+    return {"message": "Reservation created", "reservation_id": reservation.name}
 
 @frappe.whitelist()
 def list_reservations(book=None, member=None):
