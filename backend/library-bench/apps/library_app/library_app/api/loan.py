@@ -25,7 +25,6 @@ def list_loans():
 
 @frappe.whitelist()
 def create_loan(book, member, loan_date, return_date):
-    print(book, member, loan_date, return_date)
     try:
         frappe.only_for(["Librarian", "Admin", "Member"])
 
