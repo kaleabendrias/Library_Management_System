@@ -9,6 +9,12 @@ override_whitelisted_methods = {
     "frappe.core.doctype.user.user.sign_up": "library_app.api.auth.register"
 }
 
+scheduler_events = {
+    "daily": [
+        "library_app.library_app.api.loan.send_overdue_notifications"
+    ]
+}
+
 # Apps
 # ------------------
 
