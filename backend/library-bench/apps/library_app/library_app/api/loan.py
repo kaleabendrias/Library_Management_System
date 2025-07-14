@@ -11,7 +11,7 @@ def list_loans():
 
     # If user is Librarian or Admin, return all loans
     if "Librarian" in roles or "Admin" in roles:
-        loans = frappe.get_all("Loan", fields=["name", "book", "member", "loan_date", "return_date", "returned"])
+        loans = frappe.get_all("Loan", fields=["name", "book", "member", "loan_date", "return_date", "returned", "status"])
     else:
         # Otherwise, user is Member, so find Library Member linked to user email
         member_docs = frappe.get_all("Library Member", filters={"email": user}, fields=["name"])
@@ -47,7 +47,8 @@ def create_loan(book, member, loan_date, return_date):
             "member": member_id,
             "loan_date": loan_date,
             "return_date": return_date,
-            "returned": 0
+            "returned": 0,
+            "status": "Pending"
         }).insert()
         return {"message": "Loan created", "loan_id": doc.name}
     
@@ -62,3 +63,27 @@ def return_loan(loan_id):
     doc.returned = 1
     doc.save()
     return {"message": "Book returned"}
+
+@frappe.whitelist()
+def list_pending_loans():
+    frappe.only_for("Librarian", "Admin")
+    try:
+        pending_loans = frappe.get_all("Loan", filters={"status": "Pending"}, fields=["name", "book", "member", "status"])
+    except Exception as e:
+        print(e)
+        frappe.log_error(f"Error fetching pending loans: {e}", "Pending Loans")
+        frappe.response["http_status_code"] = 500
+    return pending_loans
+
+@frappe.whitelist()
+def update_loan_status(loan_id, status):
+    frappe.only_for("Librarian", "Admin")
+    if status not in ["Approved", "Rejected"]:
+        frappe.throw("Invalid status.")
+
+    loan = frappe.get_doc("Loan", loan_id)
+    loan.status = status
+    loan.save(ignore_permissions=True)
+
+    return {"message": f"Loan {status.lower()}."}
+
