@@ -1,5 +1,7 @@
 import frappe
 from frappe import _
+from frappe.utils import nowdate
+from frappe.core.doctype.communication.email import make
 
 @frappe.whitelist()
 @frappe.whitelist()
@@ -86,3 +88,52 @@ def update_loan_status(loan_id, status):
 
     return {"message": f"Loan {status.lower()}."}
 
+
+@frappe.whitelist()
+def send_overdue_notifications():
+    """
+    Find all loans where return_date < today and returned = False,
+    and send email notifications to users.
+    """
+    today = nowdate()
+    overdue_loans = frappe.get_all(
+        "Loan",
+        filters={
+            "return_date": ("<", today),
+            "returned": 0,  # assuming 'returned' is boolean or 0/1
+            "status": "Approved"
+        },
+        fields=["name", "member", "book", "return_date"]
+    )
+
+    for loan in overdue_loans:
+        try:
+            member_doc = frappe.get_doc("Library Member", loan.member)
+            user_email = member_doc.email
+
+            # Compose email subject and message
+            subject = f"Overdue Book Return Reminder for '{loan.book}'"
+            message = (
+                f"Dear {member_doc.full_name},\n\n"
+                f"Our records show that the book '{loan.book}' you borrowed "
+                f"was due for return on {loan.return_date} but has not yet been returned.\n"
+                "Please return the book as soon as possible to avoid penalties.\n\n"
+                "Thank you,\nLibrary Team"
+            )
+
+            # Send email
+            make(
+                recipients=user_email,
+                subject=subject,
+                content=message,
+                communication_type="Notification",
+                doctype="Loan",
+                name=loan.name,
+                send_email=True,
+            )
+            print("message sent")
+        except Exception as e:
+            print(e)
+            frappe.log_error(frappe.get_traceback(), f"Failed to send overdue notification for Loan {loan.name}")
+
+    return {"message": f"Sent {len(overdue_loans)} overdue notifications."}
