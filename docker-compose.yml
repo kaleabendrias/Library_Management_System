@@ -9,15 +9,23 @@ services:
       MYSQL_DATABASE: frappe
     volumes:
       - db_data:/var/lib/mysql
+  
+  redis:
+    image: redis:alpine
+    restart: always
+
 
   backend:
-    build: ./backend
+    image: frappe/bench:latest
+    working_dir: /workspace/library-bench
+    volumes:
+      - ./backend/library-bench:/workspace/library-bench
+    command: bench start
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/workspace
     depends_on:
       - db
+      - redis
 
   frontend:
     build: ./frontend

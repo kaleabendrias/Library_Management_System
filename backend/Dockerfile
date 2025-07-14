@@ -1,7 +1,4 @@
 FROM frappe/bench:latest
 
-WORKDIR /workspace
-
-COPY . /workspace
-
-CMD ["bench", "start"]
+WORKDIR /workspace/library-bench
+COPY ./library-bench /workspace/library-bench
