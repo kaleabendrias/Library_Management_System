@@ -49,7 +49,9 @@ export default function Loans() {
     }
   };
 
-  const filteredLoans = loans.filter((loan) =>
+  const filteredLoans = loans
+  .filter((loan) => loan.status === "Approved")
+  .filter((loan) =>
     loan.book.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -81,6 +83,7 @@ export default function Loans() {
                 <th className="px-4 py-3">Loan Date</th>
                 <th className="px-4 py-3">Return Date</th>
                 <th className="px-4 py-3">Returned</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
@@ -110,6 +113,7 @@ export default function Loans() {
                         <span className="text-red-600 font-semibold">No</span>
                       )}
                     </td>
+                    <td className="px-4 py-3">{loan.status}</td>
                     {isLibrarianOrAdmin && (
                       <td className="px-4 py-3">
                         {!loan.returned && (

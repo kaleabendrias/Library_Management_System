@@ -10,6 +10,7 @@ import Loans from './pages/Loans'
 import Reservations from './pages/Reservations'
 import AddBook from './pages/AddBooks'
 import EditBook from './pages/EditBook'
+import LoanApprovalPanel from './pages/LoanApproval'
 
 function App() {
   
@@ -26,7 +27,8 @@ function App() {
         <Route path="/loans" element={<Loans />} />   
         <Route path="/reservations" element={<Reservations />} />  
         <Route path="/add-book" element={<AddBook />} /> 
-        <Route path="/edit-book/:bookId" element={<EditBook />} />     
+        <Route path="/edit-book/:bookId" element={<EditBook />} /> 
+        <Route path="/loan-approval" element={<LoanApprovalPanel />} />     
       </Route>
     </Routes>
     </>
