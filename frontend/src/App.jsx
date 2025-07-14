@@ -18,12 +18,12 @@ function App() {
 
   return (
     <>
-    <Navbar />
+    {location.pathname !== '/' && <Navbar />}
     <Routes>
+      <Route path='/' element={<Home />} />
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path='/' element={<Home />} /> 
+      <Route element={<ProtectedRoute />}> 
         <Route path="/books" element={<Books />} />
         <Route path="/loans" element={<Loans />} />   
         <Route path="/reservations" element={<Reservations />} />  
