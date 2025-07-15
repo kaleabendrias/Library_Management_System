@@ -197,12 +197,14 @@ export default function Books() {
                 Reserve This Book
               </button>
             ) : (
-              <button
-                onClick={() => handleRent(book.name)}
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium transition"
-              >
-                Rent this Book
-              </button>
+              !user.roles?.includes("Librarian") && (
+                <button
+                  onClick={() => handleRent(book.name)}
+                  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-medium transition"
+                >
+                  Rent this Book
+                </button>
+              )
             )}
 
             {(user?.roles?.includes("Librarian") ||
